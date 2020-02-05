@@ -1,0 +1,91 @@
+$defualtmargin: 5px;
+$headercol: #1f4258;
+$navbottom: -20px;
+h1,
+h2,
+h3 {
+    color: $headercol;
+}
+
+%navbar {
+    background-color: #d7e3eb;
+    margin: $defualtmargin;
+    margin-bottom: $navbottom;
+}
+
+.navname {
+    background-color: #d7e3eb;
+}
+
+.vertnav {
+    @extend %navbar;
+    list-style-type: none;
+    margin: 0;
+    padding: 5px;
+    display: none;
+}
+
+nav {
+    @extend %navbar;
+    float: left;
+}
+
+a:hover {
+    color: white;
+    background-color: $headercol;
+}
+
+.myname {
+    @extend %navbar;
+    float: right;
+}
+
+#hint {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: #d99595;
+    text-align: center;
+}
+
+.images {
+    margin: $defualtmargin;
+    margin-bottom: 20px;
+}
+
+.row img {
+    width: 100%;
+    height: auto;
+}
+
+@media screen and (max-width: 600px) {
+    .navname {
+        display: none;
+    }
+    .vertnav {
+        display: block;
+    }
+}
+
+ul li {
+    padding-bottom: 10px;
+}
+
+tr>td {
+    padding: $defualtmargin;
+    text-align: left;
+}
+
+div {
+    ul {
+        color: rgb(89, 89, 89);
+        list-style: none;
+        padding-left: 10px;
+    }
+    table {
+        padding: 0;
+        color: rgb(89, 89, 89);
+        margin: $defualtmargin;
+    }
+}
