@@ -12,6 +12,7 @@ from sqlalchemy import create_engine, MetaData, inspect
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
+# function used to hash user passwords
 def encrypt_string(hash_string):
     sha_signature = \
         hashlib.sha256(hash_string.encode()).hexdigest()
@@ -98,9 +99,11 @@ def login():
 
 @app.route("/admin")
 def admin():
+    if session.get("user") is None:
+        return redirect(url_for('home'))
     # check for unauthorized access
     if session["user"] != 'admin':
-        return "You shouldn't be here"
+        return redirect(url_for('home'))
     # get all current users
     currentusers = db.execute("SELECT * FROM users").fetchall()
     return render_template('admin.html', user=session["user"], currentusers=currentusers)
@@ -109,13 +112,17 @@ def admin():
 @app.route("/logout")
 def logout():
     session["user"] = ''
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 
 @app.route("/search")
 def search():
+    if session.get("user") is None:
+        return redirect(url_for('home'))
+    elif session.get("user") == '':
+        return redirect(url_for('home'))
     return render_template('search.html', user=session["user"])
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
