@@ -8,7 +8,7 @@ import hashlib
 
 from flask import Flask, session, request, render_template, redirect, url_for
 from flask_session import Session
-from sqlalchemy import create_engine, MetaData, inspect
+from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
@@ -33,10 +33,6 @@ Session(app)
 engine = create_engine(
     'postgres://qbtxfingwrqmyc:962e9c32a97ff8eb6dff5e85a07032b9a9758d9da76c231864487642df21726a@ec2-35-168-54-239.compute-1.amazonaws.com:5432/d3tu5tucael6mf')
 db = scoped_session(sessionmaker(bind=engine))
-users = db.execute("SELECT username FROM Users").fetchall()
-print(users)
-print("setup done!")
-
 
 @app.route("/")
 def home():
@@ -55,14 +51,16 @@ def login():
     # login/register action
     else:
         username = request.form.get('Username')
+        # escape ' character by replacing with ''
+        if "'" in username:
+            value = username.replace("'", "''")
         password = request.form.get('Password')
-        hashpass = encrypt_string(password)
+        hashpass = encrypt_string(password) # password doesn't need any sanitation since it is hashed
         if 'login' in request.form:
             print('login!')
             # find all users with username
             userswithname = db.execute("SELECT username,password FROM users WHERE username=:u AND password=:p",
                                        {"u": username, "p": hashpass}).fetchall()
-            print(userswithname)
             # if username or password doesn't match
             if len(userswithname) == 0:
                 return render_template('login.html', logError='Username or password is incorrect', user=session["user"])
