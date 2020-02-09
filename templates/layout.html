@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"
+          title="bootstrap">
+    <link rel="stylesheet" type="text/css" href="/static/global_style.css">
+</head>
+
+<div class=navname>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        {% if user=='' %}
+        | <a href="{{ url_for('login') }}">Login</a>
+        {% else %}
+        | <a href="{{ url_for('search') }}">Search</a>
+        | <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+        {% if user=='admin' %}
+        | <a href="{{ url_for('admin') }}">Admin</a>
+        {% endif %}
+    </nav>
+    <div class="myname">
+        {{ user }}
+    </div>
+    <div style="clear: both;">&nbsp;</div>
+</div>
+
+<ul class="vertnav">
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('login') }}">Login</a></li>
+    {% if user=='admin' %}
+    <li><a href="{{ url_for('admin') }}">admin</a></li>
+    {% endif %}
+</ul>
+
+<body>
+{% block body %}
+{% endblock %}
+<p id="hint">You can use the navigation bar at the top of the page to go to different pages on this site</p>
+</body>

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Admin
+{% endblock %}
+
+{% block body %}
+<h1>Admin Page</h1>
+<h2>Current Registered users</h2>
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Password Hash</th>
+    </tr>
+    {% for user in currentusers %}
+    <tr>
+        {% for i in user %}
+        <td>{{i}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

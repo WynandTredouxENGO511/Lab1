@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" title="bootstrap">
+    <link rel="stylesheet" type="text/css" href="/static/gobal_style.css">
+</head>
+
+<div class=navname>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('login') }}">Login</a>
+    </nav>
+    <div class="myname">
+        Wynand Tredoux
+    </div>
+    <div style="clear: both;">&nbsp;</div>
+</div>
+
+<ul class="vertnav">
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('login') }}">Login</a></li>
+</ul>
+
+<body>
+
+    <h1>Home</h1>
+    <div class="images">
+        <img src="/static/img/Geo.jpg" alt="Geomatics Engineering Logo" height="200" width="auto">
+        <img src="/static/img/Schulich.jpg" alt="Schulich Logo" height="200" width="auto">
+    </div>
+
+    <p>Welcome to my website for ENGO551 lab 1!</p>
+    <p id="hint">You can use the navigation bar at the top of the page to go to different pages on this site</p>
+</body>
+
+
+
+</html>
