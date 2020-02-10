@@ -5,12 +5,18 @@ h1,
 h2,
 h3 {
     color: $headercol;
+    margin-left: 10px;
+}
+
+form {
+    margin-left: 10px;
 }
 
 %navbar {
     background-color: #d7e3eb;
     margin: $defualtmargin;
     margin-bottom: $navbottom;
+    margin-left: 10px;
 }
 
 .navname {
@@ -21,6 +27,7 @@ h3 {
     @extend %navbar;
     list-style-type: none;
     margin: 0;
+    margin-left: 10px;
     padding: 5px;
     display: none;
 }
@@ -52,6 +59,7 @@ a:hover {
 .images {
     margin: $defualtmargin;
     margin-bottom: 20px;
+    margin-left: 10px;
 }
 
 .row img {
@@ -72,24 +80,37 @@ ul li {
     padding-bottom: 10px;
 }
 
-tr>td {
-    padding: $defualtmargin;
+td {
     text-align: left;
 }
 
-div {
-    ul {
-        color: rgb(89, 89, 89);
-        list-style: none;
-        padding-left: 10px;
-    }
-    table {
-        padding: 0;
-        color: rgb(89, 89, 89);
-        margin: $defualtmargin;
-    }
+table {
+  border-collapse: separate;
+  border-spacing: 10px 0;
+  text-align: left;
 }
 
 .error{
     color: #e71616;
+}
+
+p{
+    margin-left: 10px;
+}
+
+.btn-link{
+  border:none;
+  outline:none;
+  background:none;
+  cursor:pointer;
+  color:#0000EE;
+  padding:0;
+  text-decoration:underline;
+  font-family:inherit;
+  font-size:inherit;
+  text-align: left;
+}
+
+.btn-link:active{
+  color:#FF0000;
 }

@@ -11,8 +11,8 @@ Login
 <div class=error>{{ logError }}</div>
 {% endif %}
 <form name="login" action="{{ url_for('login') }}" method="post">
-    <input type="text" name="Username" placeholder="Username">
-    <input type="password" name="Password" placeholder="Password">
+    <input type="text" name="Username" placeholder="Username" required>
+    <input type="password" name="Password" placeholder="Password" required>
     <input type="hidden" name="login">
     <button>Login</button>
 </form>
@@ -22,11 +22,12 @@ Login
 <div class=error>{{ regError }}</div>
 {% endif %}
 {% if regComplete %}
-<div>Registration Complete!</div>
+<div>Registration Complete! You can now login above</div>
 {% endif %}
 <form name="register" action="{{ url_for('login') }}" method="post">
-    <input type="text" name="Username" placeholder="Username">
-    <input type="password" name="Password" placeholder="Password">
+    <input type="text" name="Username" placeholder="Username" required>
+    <input type="password" name="Password" placeholder="Password" required>
+    <input type="password" name="ConfirmPassword" placeholder="Confirm Password" required>
     <input type="hidden" name="register">
     <button>Register</button>
 </form>

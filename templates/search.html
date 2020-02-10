@@ -1,9 +1,51 @@
 {% extends "layout.html" %}
 
+
 {% block title %}
 Search
 {% endblock %}
 
 {% block body %}
 <h1>Book Search</h1>
+<form name="Booksearch" action="{{ url_for('search') }}" method="post">
+    <input type="text" name="isbn" placeholder="ISBN">
+    <input type="text" name="title" placeholder="Title">
+    <input type="text" name="author" placeholder="Author">
+    <input type="number" name="year" placeholder="Year (exact)" min="0">
+    <button>Search</button>
+</form>
+
+{% if numbooks is defined %}
+<h2>Results ({{ numbooks }})</h2>
+{% if numbooks==0 %}
+
+<p class=error>No books found. <br> Note: All fields are case sensitive</p>
+{% elif numbooks>0 %}
+<table>
+    <tr>
+        <th>ISBN</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Year</th>
+    </tr>
+    {% for book in books %}
+    <tr>
+        <td>
+            <form action="{{ url_for('book') }}" method="get">
+                <button name="isbn" class="btn-link" value="{{ book[0] }}">{{ book[0] }}</button>
+                <input type="hidden" name="title" value="{{ book[1] }}">
+                <input type="hidden" name="author" value="{{ book[2] }}">
+                <input type="hidden" name="year" value="{{ book[3] }}">
+            </form>
+        </td>
+        <td>{{ book[1] }}</td>
+        <td>{{ book[2] }}</td>
+        <td>{{ book[3] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endif %}
+{% endif %}
+
 {% endblock %}

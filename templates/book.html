@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+Book Info
+{% endblock %}
+
+{% block body %}
+<h1>Book Info</h1>
+<h2>{{ title }} by {{ author }}</h2>
+<table>
+    <tr>
+        <td>
+            ISBN: {{ isbn }}
+        </td>
+        <td>
+            Publication Year: {{ year }}
+        </td>
+    </tr>
+</table>
+<br><h2>Rating</h2>
+<br><h2>Reviews ()</h2>
+<br><h2>Submit a Review</h2>
+<form action="{{ url_for('book') }} method="post">
+  <textarea name="message" rows="10" cols="30">The cat was playing in the garden.</textarea>
+  <br>
+  <input type="submit">
+</form>
+{% endblock %}
