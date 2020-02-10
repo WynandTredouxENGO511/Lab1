@@ -54,6 +54,7 @@ a:hover {
     width: 100%;
     color: #d99595;
     text-align: center;
+    font-size: 2vh;
 }
 
 .images {
@@ -85,32 +86,84 @@ td {
 }
 
 table {
-  border-collapse: separate;
-  border-spacing: 10px 0;
-  text-align: left;
+    border-collapse: separate;
+    border-spacing: 10px 0;
+    text-align: left;
 }
 
-.error{
+.error {
     color: #e71616;
-}
-
-p{
     margin-left: 10px;
 }
 
-.btn-link{
-  border:none;
-  outline:none;
-  background:none;
-  cursor:pointer;
-  color:#0000EE;
-  padding:0;
-  text-decoration:underline;
-  font-family:inherit;
-  font-size:inherit;
-  text-align: left;
+p {
+    margin-left: 10px;
 }
 
-.btn-link:active{
-  color:#FF0000;
+.btn-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    color: #0000EE;
+    padding: 0;
+    text-decoration: underline;
+    font-family: inherit;
+    font-size: inherit;
+    text-align: left;
+}
+
+.btn-link:active {
+    color: #FF0000;
+}
+
+.rating {
+    float: left;
+    margin-top: -2px;
+}
+
+.rating>input {
+    position: absolute;
+    top: -9999px;
+    clip: rect(0, 0, 0, 0);
+}
+
+// Rating css based on https://gist.github.com/blairanderson/7f9d1c08345c6573e09edaa1f7316fa1
+.rating>label {
+    float: right;
+    width: 1em;
+    padding: 0 .1em;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 200%;
+    line-height: 1.2;
+    color: #ddd;
+}
+
+.rating>label:before {
+    content: '★ ';
+}
+
+.rating>input:checked~label {
+    color: gold;
+}
+
+.rating>label:hover,
+.rating>label:hover~label {
+    color: #f2e388;
+}
+
+.rating>input:checked+label:hover,
+.rating>input:checked+label:hover~label,
+.rating>input:checked~label:hover,
+.rating>input:checked~label:hover~label,
+.rating>label:hover~input:checked~label {
+    color: gold;
+}
+
+.rating>label:active {
+    position: relative;
+    top: 2px;
+    left: 2px;
 }

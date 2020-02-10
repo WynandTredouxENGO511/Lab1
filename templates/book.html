@@ -7,23 +7,35 @@ Book Info
 
 {% block body %}
 <h1>Book Info</h1>
-<h2>{{ title }} by {{ author }}</h2>
+<h2><i>{{ title }}</i> by {{ author }}</h2>
 <table>
     <tr>
         <td>
-            ISBN: {{ isbn }}
+            <b>ISBN:</b> {{ isbn }}
         </td>
         <td>
-            Publication Year: {{ year }}
+            <b>Publication Year:</b> {{ year }}
         </td>
     </tr>
 </table>
 <br><h2>Rating</h2>
 <br><h2>Reviews ()</h2>
-<br><h2>Submit a Review</h2>
-<form action="{{ url_for('book') }} method="post">
-  <textarea name="message" rows="10" cols="30">The cat was playing in the garden.</textarea>
-  <br>
-  <input type="submit">
+<br><h2>Submit a Review </h2>
+{% if SubmitError is defined %}
+<p class=error style="margin-bottom:-10px;margin-top:-14px;">{{ SubmitError }}</p>
+{% endif %}
+<form action="" method="post">
+    <!--    Rating system using radio buttons, credit to https://gist.github.com/blairanderson/7f9d1c08345c6573e09edaa1f7316fa1 -->
+    <fieldset class="rating">
+        <input type="radio" id="star5" name="rating" value="5"/><label for="star5" title="Rocks!">5 stars</label>
+        <input type="radio" id="star4" name="rating" value="4"/><label for="star4" title="Pretty good">4 stars</label>
+        <input type="radio" id="star3" name="rating" value="3"/><label for="star3" title="Meh">3 stars</label>
+        <input type="radio" id="star2" name="rating" value="2"/><label for="star2" title="Kinda bad">2 stars</label>
+        <input type="radio" id="star1" name="rating" value="1"/><label for="star1" title="Sucks big time">1 star</label>
+    </fieldset>
+    <br><br>
+    <textarea name="review" rows="10" cols=100% placeholder="Write a review!" style="resize:both;"></textarea>
+    <br>
+    <input type="submit">
 </form>
 {% endblock %}

@@ -65,11 +65,14 @@ def login():
         username = SQLquotes(username)
         password = request.form.get('Password')
         hashpass = encrypt_string(password)  # password doesn't need any sanitation since it is hashed
+        # print(username, password, hashpass)
 
         if 'login' in request.form:  # if login was pressed
             # find all users with username
+            # print("before execute")
             userswithname = db.execute("SELECT username,password FROM users WHERE username=:u AND password=:p",
                                        {"u": username, "p": hashpass}).fetchall()
+            # print("after execute")
             # if username or password doesn't match
             if len(userswithname) == 0:
                 return render_template('login.html', logError='Username or password is incorrect', user=session["user"])
@@ -146,7 +149,7 @@ def search():
     title = SQLquotes(request.form.get('title'))
     author = SQLquotes(request.form.get('author'))
     year = request.form.get('year')
-    #print(f"{isbn}, {title}, {author}, {year}")
+    # print(f"{isbn}, {title}, {author}, {year}")
 
     # build SQL query
     command = ("SELECT * FROM books WHERE "
@@ -157,13 +160,14 @@ def search():
     # 'year' cannot use LIKE operator, so only include if the user submitted it
     if year != '':
         command = command + " AND year = '%(year)s'" % {'year': year}
-    #print(command)
+    # print(command)
 
     # query the database for books
     foundbooks = db.execute(command).fetchall()
-    #print(foundbooks)
+    # print(foundbooks)
 
     return render_template('search.html', user=session["user"], numbooks=len(foundbooks), books=foundbooks)
+
 
 @app.route("/book", methods=["GET", "POST"])
 def book():
@@ -172,22 +176,41 @@ def book():
         return redirect(url_for('home'))
     elif session.get("user") == '':
         return redirect(url_for('home'))
+
     # get request (coming from search page)
     if request.method == "GET":
-        isbn = request.args.get('isbn', None)
-        title = request.args.get('title', None)
-        author = request.args.get('author', None)
-        year = request.args.get('year', None)
+        # get book variables from page url
+        session['isbn'] = request.args.get('isbn', None)
+        session['title'] = request.args.get('title', None)
+        session['author'] = request.args.get('author', None)
+        session['year'] = request.args.get('year', None)
 
         # if any of the above is none, give 404 page
-        if isbn is None or title is None or author is None or year is None:
+        if session['isbn'] is None or session['title'] is None or session['author'] is None or session['year'] is None:
             abort(404)
 
-        print(f"Request info on: {isbn}, {title}, {author}, {year}")
-        return render_template('book.html', user=session["user"],isbn=isbn,title=title,author=author,year=year)
+        print(f"Request info on: {session['isbn']}, {session['title']}, {session['author']}, {session['year']}")
+        return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+                               author=session['author'], year=session['year'])
     # post request (submitting a review)
-    #else:
+    else:
+        rating = request.form.get('rating')
+        review = request.form.get('review')
+        print(rating, review)
+        if rating is None:
+            return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+                                   author=session['author'], year=session['year'],
+                                   SubmitError="Must rate at last one star")
+        elif review == "":
+            return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+                                   author=session['author'], year=session['year'],
+                                   SubmitError="Must write a review")
+        # valid review has been submitted, make sure that the book exists in database
+
+
+        return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+                               author=session['author'], year=session['year'])
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
-

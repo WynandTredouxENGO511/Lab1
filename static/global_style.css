@@ -1,3 +1,4 @@
+@charset "UTF-8";
 h1,
 h2,
 h3 {
@@ -48,6 +49,7 @@ a:hover {
   width: 100%;
   color: #d99595;
   text-align: center;
+  font-size: 2vh;
 }
 
 .images {
@@ -86,6 +88,7 @@ table {
 
 .error {
   color: #e71616;
+  margin-left: 10px;
 }
 
 p {
@@ -107,6 +110,56 @@ p {
 
 .btn-link:active {
   color: #FF0000;
+}
+
+.rating {
+  float: left;
+  margin-top: -2px;
+}
+
+.rating > input {
+  position: absolute;
+  top: -9999px;
+  clip: rect(0, 0, 0, 0);
+}
+
+.rating > label {
+  float: right;
+  width: 1em;
+  padding: 0 0.1em;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 200%;
+  line-height: 1.2;
+  color: #ddd;
+}
+
+.rating > label:before {
+  content: "★ ";
+}
+
+.rating > input:checked ~ label {
+  color: gold;
+}
+
+.rating > label:hover,
+.rating > label:hover ~ label {
+  color: #f2e388;
+}
+
+.rating > input:checked + label:hover,
+.rating > input:checked + label:hover ~ label,
+.rating > input:checked ~ label:hover,
+.rating > input:checked ~ label:hover ~ label,
+.rating > label:hover ~ input:checked ~ label {
+  color: gold;
+}
+
+.rating > label:active {
+  position: relative;
+  top: 2px;
+  left: 2px;
 }
 
 /*# sourceMappingURL=global_style.css.map */
