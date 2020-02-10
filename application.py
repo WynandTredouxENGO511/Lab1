@@ -140,6 +140,7 @@ def admin():
 @app.route("/logout")
 def logout():
     session["user"] = ''
+    session.clear() # clear session for user on logout
     return redirect(url_for('login'))
 
 
