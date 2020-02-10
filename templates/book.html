@@ -7,6 +7,9 @@ Book Info
 
 {% block body %}
 <h1>Book Info</h1>
+{% if DBError is defined %}
+<p class="error">{{ DBError }}</p>
+{% else %}
 <h2><i>{{ title }}</i> by {{ author }}</h2>
 <table>
     <tr>
@@ -18,11 +21,34 @@ Book Info
         </td>
     </tr>
 </table>
-<br><h2>Rating</h2>
-<br><h2>Reviews ()</h2>
+<br><h2>Average Rating {{ avgscore }}</h2>
+<br><h2>Reviews ({{ numreviews }})</h2>
+
+{% if numreviews > 0 %}
+<table style="width:50%">
+    <tr>
+        <th>Username</th>
+        <th>Score</th>
+        <th>Review</th>
+    </tr>
+    {% for i in range(0,numreviews) %}
+
+    <tr>
+        <td>{{ users[i] }}</td>
+        <td>{{ scores[i] }}</td>
+        <td>{{ text[i] }}</td>
+    </tr>
+
+    {% endfor %}
+</table>
+{% endif %}
+
 <br><h2>Submit a Review </h2>
 {% if SubmitError is defined %}
 <p class=error style="margin-bottom:-10px;margin-top:-14px;">{{ SubmitError }}</p>
+{% endif %}
+{% if Rsubmit %}
+<p style="margin-bottom:-10px;margin-top:-14px;">Review Submitted!</p>
 {% endif %}
 <form action="" method="post">
     <!--    Rating system using radio buttons, credit to https://gist.github.com/blairanderson/7f9d1c08345c6573e09edaa1f7316fa1 -->
@@ -38,4 +64,5 @@ Book Info
     <br>
     <input type="submit">
 </form>
+{% endif %}
 {% endblock %}

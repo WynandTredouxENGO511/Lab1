@@ -19,6 +19,16 @@ def encrypt_string(hash_string):
     return sha_signature
 
 
+# mean fucntion
+def mean(list):
+    if len(list) == 0:
+        return 0
+    sums = 0.0
+    for i in list:
+        sums += i
+    return sums / len(list)
+
+
 # function to deal with quotes in SQL queries
 def SQLquotes(str):
     if "'" in str:
@@ -190,26 +200,92 @@ def book():
             abort(404)
 
         print(f"Request info on: {session['isbn']}, {session['title']}, {session['author']}, {session['year']}")
+        # build sql command to select book
+        command = ("SELECT * FROM books WHERE "
+                   "isbn='%(isbn)s' AND "
+                   "title='%(title)s' AND "
+                   "author='%(author)s' AND "
+                   "year='%(year)s'" % {
+                       "isbn": session['isbn'], 'title': session['title'], "author": session['author'],
+                       "year": session['year']})
+        # check that book with above info exists in database
+        if len(db.execute(command).fetchall()) == 0:
+            # if book does not exist
+            return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+                                   author=session['author'], year=session['year'],
+                                   DBError="Book not found")
+        # get reviews from database
+        command = ("SELECT * FROM reviews WHERE isbn='%(isbn)s'" % {"isbn": session['isbn']})
+        reviews = db.execute(command).fetchall()
+        # if len(reviews) > 0:
+        # separate review list into score, user, and review text
+        session['review_scores'] = []
+        session['review_text'] = []
+        session['review_users'] = []
+        for r in reviews:
+            session['review_scores'].append(r[3])
+            session['review_text'].append(r[2])
+            session['review_users'].append(r[0])
+        # print(review_scores, review_text, review_users, mean(review_scores))
         return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
-                               author=session['author'], year=session['year'])
+                               author=session['author'], year=session['year'], scores=session['review_scores'],
+                               text=session['review_text'], users=session['review_users'],
+                               avgscore=mean(session['review_scores']),
+                               numreviews=len(session['review_scores']))
+        # else:
+        #     print("no reviews found")
+        #     return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+        #                            author=session['author'], year=session['year'], numreviews=0, avgscore=0)
+
+        # return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+        #                        author=session['author'], year=session['year'])
     # post request (submitting a review)
     else:
         rating = request.form.get('rating')
-        review = request.form.get('review')
+        review_us = request.form.get('review')
+        review = SQLquotes(review_us)  # escape quotes from text input
         print(rating, review)
         if rating is None:
             return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
-                                   author=session['author'], year=session['year'],
+                                   author=session['author'], year=session['year'], scores=session['review_scores'],
+                                   text=session['review_text'], users=session['review_users'],
+                                   avgscore=mean(session['review_scores']),
+                                   numreviews=len(session['review_scores']),
                                    SubmitError="Must rate at last one star")
         elif review == "":
             return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
-                                   author=session['author'], year=session['year'],
+                                   author=session['author'], year=session['year'], scores=session['review_scores'],
+                                   text=session['review_text'], users=session['review_users'],
+                                   avgscore=mean(session['review_scores']),
+                                   numreviews=len(session['review_scores']),
                                    SubmitError="Must write a review")
-        # valid review has been submitted, make sure that the book exists in database
 
+        # valid review has been submitted, GET method already checked that the book exists
+        # check that user has not already submitted a review for this book
+        if len(db.execute("SELECT username FROM reviews WHERE username='%(username)s' AND isbn='%(isbn)s'" % {
+            'username': session["user"], 'isbn': session['isbn']}).fetchall()) != 0:
+            return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
+                                   author=session['author'], year=session['year'], scores=session['review_scores'],
+                                   text=session['review_text'], users=session['review_users'],
+                                   avgscore=mean(session['review_scores']),
+                                   numreviews=len(session['review_scores']),
+                                   SubmitError="You cannot submit another review for this book")
+        # submit review to database
+        db.execute("INSERT INTO reviews (username, isbn, review, rating) "
+                   "VALUES ('%(user)s', '%(isbn)s', '%(review_text)s', '%(review_rating)s')"
+                   % {'user': session["user"], 'isbn': session['isbn'], 'review_text': review, 'review_rating': rating})
+        db.commit()
+        print("review submitted!")
+        # add review to session variables
+        session['review_scores'].append(int(rating))
+        session['review_users'].append(session['user'])
+        session['review_text'].append(review_us)
 
         return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
-                               author=session['author'], year=session['year'])
+                               author=session['author'], year=session['year'], scores=session['review_scores'],
+                               text=session['review_text'], users=session['review_users'],
+                               avgscore=mean(session['review_scores']),
+                               numreviews=len(session['review_scores']), Rsubmit=1)
 
 
 if __name__ == '__main__':
