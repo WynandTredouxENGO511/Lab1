@@ -21,7 +21,12 @@ Book Info
         </td>
     </tr>
 </table>
+{% if numreviews == 0 %}
+<br><h2>No Rating Yet</h2>
+{% else %}
 <br><h2>Average Rating {{ avgscore }}</h2>
+{% endif %}
+
 <br><h2>Reviews ({{ numreviews }})</h2>
 
 {% if numreviews > 0 %}
@@ -41,6 +46,17 @@ Book Info
 
     {% endfor %}
 </table>
+{% endif %}
+
+{% if Gnum is defined %}
+<br><h2>Goodreads.com Rating</h2>
+{% if Gnum == 0 %}
+<p>No ratings for this book found on <a href="http://www.goodreads.com/">Goodreads.com</a></p>
+{% else %}
+<p>
+    This book as an average rating of {{ Gavg }} from {{ Gnum }} reviews on <a href="http://www.goodreads.com/">Goodreads.com</a>
+</p>
+{% endif %}
 {% endif %}
 
 <br><h2>Submit a Review </h2>

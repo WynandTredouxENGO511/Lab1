@@ -1,10 +1,12 @@
 """
-Environemnt variables
+Environemnt variables:
 DATABASE_URL=postgres://qbtxfingwrqmyc:962e9c32a97ff8eb6dff5e85a07032b9a9758d9da76c231864487642df21726a@ec2-35-168-54-239.compute-1.amazonaws.com:5432/d3tu5tucael6mf
+API_KEY=v6TC76FrNDwCdsxMwPBNg
 """
 
 import os
 import hashlib
+import requests
 
 from flask import Flask, session, request, render_template, redirect, url_for, abort
 from flask_session import Session
@@ -42,6 +44,10 @@ app = Flask(__name__)
 # Check for DATABASE_URL variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
+# Check for API_KEY variable
+if not os.getenv("API_KEY"):
+    raise RuntimeError("API_KEY is not set")
+KEY = os.getenv("API_KEY")
 
 # Load config
 app.config.from_pyfile('config.cfg', silent=True)  # load settings from config.cfg
@@ -140,7 +146,7 @@ def admin():
 @app.route("/logout")
 def logout():
     session["user"] = ''
-    session.clear() # clear session for user on logout
+    session.clear()  # clear session for user on logout
     return redirect(url_for('login'))
 
 
@@ -218,7 +224,6 @@ def book():
         # get reviews from database
         command = ("SELECT * FROM reviews WHERE isbn='%(isbn)s'" % {"isbn": session['isbn']})
         reviews = db.execute(command).fetchall()
-        # if len(reviews) > 0:
         # separate review list into score, user, and review text
         session['review_scores'] = []
         session['review_text'] = []
@@ -227,19 +232,29 @@ def book():
             session['review_scores'].append(r[3])
             session['review_text'].append(r[2])
             session['review_users'].append(r[0])
-        # print(review_scores, review_text, review_users, mean(review_scores))
+            # print(review_scores, review_text, review_users, mean(review_scores))
+
+        # get reviews from Goodreads
+        # define session variables to save Goodreads info
+        session['Gnumrating'] = 0
+        session['Gavgrating'] = 0
+        res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                           params={"key": KEY, "isbns": session['isbn']})
+        if res.status_code != 200:
+            print('Error: Goodreads could not find book')
+        else:
+            data = res.json()
+            session['Gnumrating'] = data['books'][0]['work_ratings_count']
+            session['Gavgrating'] = data['books'][0]['average_rating']
+            # print(f"Goodreads rated this book {Gavgrating} from {Gnumrating} reviews")
+
         return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                author=session['author'], year=session['year'], scores=session['review_scores'],
                                text=session['review_text'], users=session['review_users'],
                                avgscore=mean(session['review_scores']),
-                               numreviews=len(session['review_scores']))
-        # else:
-        #     print("no reviews found")
-        #     return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
-        #                            author=session['author'], year=session['year'], numreviews=0, avgscore=0)
+                               numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
+                               Gavg=session['Gavgrating'])
 
-        # return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
-        #                        author=session['author'], year=session['year'])
     # post request (submitting a review)
     else:
         rating = request.form.get('rating')
@@ -251,14 +266,16 @@ def book():
                                    author=session['author'], year=session['year'], scores=session['review_scores'],
                                    text=session['review_text'], users=session['review_users'],
                                    avgscore=mean(session['review_scores']),
-                                   numreviews=len(session['review_scores']),
+                                   numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
+                                   Gavg=session['Gavgrating'],
                                    SubmitError="Must rate at last one star")
         elif review == "":
             return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                    author=session['author'], year=session['year'], scores=session['review_scores'],
                                    text=session['review_text'], users=session['review_users'],
                                    avgscore=mean(session['review_scores']),
-                                   numreviews=len(session['review_scores']),
+                                   numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
+                                   Gavg=session['Gavgrating'],
                                    SubmitError="Must write a review")
 
         # valid review has been submitted, GET method already checked that the book exists
@@ -269,7 +286,8 @@ def book():
                                    author=session['author'], year=session['year'], scores=session['review_scores'],
                                    text=session['review_text'], users=session['review_users'],
                                    avgscore=mean(session['review_scores']),
-                                   numreviews=len(session['review_scores']),
+                                   numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
+                                   Gavg=session['Gavgrating'],
                                    SubmitError="You cannot submit another review for this book")
         # submit review to database
         db.execute("INSERT INTO reviews (username, isbn, review, rating) "
@@ -286,7 +304,8 @@ def book():
                                author=session['author'], year=session['year'], scores=session['review_scores'],
                                text=session['review_text'], users=session['review_users'],
                                avgscore=mean(session['review_scores']),
-                               numreviews=len(session['review_scores']), Rsubmit=1)
+                               numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
+                               Gavg=session['Gavgrating'], Rsubmit=1)
 
 
 if __name__ == '__main__':
