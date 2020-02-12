@@ -21,6 +21,7 @@
         {% if user=='admin' %}
         | <a href="{{ url_for('admin') }}">Admin</a>
         {% endif %}
+        | <a href="{{ url_for('api_info') }}">API</a>
     </nav>
     <div class="myname">
         {{ user }}
@@ -39,6 +40,7 @@
     {% if user=='admin' %}
     <li><a href="{{ url_for('admin') }}">Admin</a></li>
     {% endif %}
+    <li><a href="{{ url_for('api_info') }}">API</a></li>
 </ul>
 
 <body>
