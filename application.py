@@ -7,7 +7,6 @@ API_KEY=v6TC76FrNDwCdsxMwPBNg
 import os
 import hashlib
 import requests
-# import jsonify
 
 from flask import Flask, session, request, render_template, redirect, url_for, abort, jsonify
 from flask_session import Session
@@ -94,14 +93,11 @@ def login():
         username = SQLquotes(username)
         password = request.form.get('Password')
         hashpass = encrypt_string(password)  # password doesn't need any sanitation since it is hashed
-        # print(username, password, hashpass)
 
         if 'login' in request.form:  # if login was pressed
             # find all users with username
-            # print("before execute")
             userswithname = db.execute("SELECT username,password FROM users WHERE username=:u AND password=:p",
                                        {"u": username, "p": hashpass}).fetchall()
-            # print("after execute")
             # if username or password doesn't match
             if len(userswithname) == 0:
                 return render_template('login.html', logError='Username or password is incorrect', user=session["user"])
@@ -111,6 +107,7 @@ def login():
 
         elif 'register' in request.form:  # if register was pressed
             print('register')
+            # HTML form checks for blank fields already, but just to be safe
             # check if username is blank
             if username == '':
                 return render_template('login.html', regError='Username cannot be blank', user=session["user"])
@@ -179,7 +176,6 @@ def search():
     title = SQLquotes(request.form.get('title'))
     author = SQLquotes(request.form.get('author'))
     year = request.form.get('year')
-    # print(f"{isbn}, {title}, {author}, {year}")
 
     # build SQL query
     command = ("SELECT * FROM books WHERE "
@@ -190,11 +186,11 @@ def search():
     # 'year' cannot use LIKE operator, so only include if the user submitted it
     if year != '':
         command = command + " AND year = '%(year)s'" % {'year': year}
-    # print(command)
+    # add ORDER BY title
+    command += " ORDER BY title ASC"
 
     # query the database for books
     foundbooks = db.execute(command).fetchall()
-    # print(foundbooks)
 
     return render_template('search.html', user=session["user"], numbooks=len(foundbooks), books=foundbooks)
 
@@ -240,10 +236,10 @@ def book():
         # separate review list into score, user, and review text
         session['review_scores'], session['review_text'], session['review_users'] = parsReviews(reviews)
 
-        # get reviews from Goodreads
         # define session variables to save Goodreads info
         session['Gnumrating'] = 0
         session['Gavgrating'] = 0
+        # get ratings from Goodreads
         res = requests.get("https://www.goodreads.com/book/review_counts.json",
                            params={"key": KEY, "isbns": session['isbn']})
         if res.status_code != 200:
@@ -252,7 +248,6 @@ def book():
             data = res.json()
             session['Gnumrating'] = data['books'][0]['work_ratings_count']
             session['Gavgrating'] = data['books'][0]['average_rating']
-            # print(f"Goodreads rated this book {Gavgrating} from {Gnumrating} reviews")
 
         return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                author=session['author'], year=session['year'], scores=session['review_scores'],
@@ -301,7 +296,7 @@ def book():
                    % {'user': session["user"], 'isbn': session['isbn'], 'review_text': review, 'review_rating': rating})
         db.commit()
         print("review submitted!")
-        # add review to session variables
+        # add review to session variables so the page info updates immediately
         session['review_scores'].append(int(rating))
         session['review_users'].append(session['user'])
         session['review_text'].append(review_us)
