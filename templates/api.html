@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+API Access info
+{% endblock %}
+
+{% block body %}
+<h1>API Access</h1>
+<p>API usage:</p>
+<p style="margin-left:30px;margin-top:-15px;">
+    URL: http://localhost:5000/api<br>
+    Parameters: isbn
+</p>
+<p>Example: http://localhost:5000/api?isbn=12345<br>
+    Returns a JSON response in the following format:</p>
+<table style="background-color:#f7f7f7;margin-left:30px;margin-bottom:10px;">
+    <tr>
+        <td>{</td>
+    </tr>
+    <tr>
+        <td>
+            <div style="margin-left:30px;">
+                <code>"<span class="nt">author</span>": "<span class="s2">testauthor</span>", <br>
+                    "<span class="nt">average_score</span>": <span class="mi">5.0</span>, <br>
+                    "<span class="nt">isbn</span>": "<span class="s2">12345</span>", <br>
+                    "<span class="nt">review_count</span>": <span class="mi">1</span>, <br>
+                    "<span class="nt">title</span>": "<span class="s2">testtitle</span>", <br>
+                    "<span class="nt">year</span>": <span class="mi">2020</span> </code><br>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>}</td>
+    </tr>
+</table>
+<p>If the requested ISBN number isn’t in the database, a 404 error will be returned.</p>
+{% endblock %}

@@ -8,7 +8,7 @@ import os
 import hashlib
 import requests
 
-from flask import Flask, session, request, render_template, redirect, url_for, abort
+from flask import Flask, session, request, render_template, redirect, url_for, abort, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -37,6 +37,18 @@ def SQLquotes(str):
         return str.replace("'", "''")
     else:
         return str
+
+
+# function to separate review list into score, user, and review text
+def parsReviews(reviews):
+    review_scores = []
+    review_text = []
+    review_users = []
+    for r in reviews:
+        review_scores.append(r[3])
+        review_text.append(r[2])
+        review_users.append(r[0])
+    return review_scores, review_text, review_users
 
 
 app = Flask(__name__)
@@ -197,10 +209,10 @@ def book():
     # get request (coming from search page)
     if request.method == "GET":
         # get book variables from page url
-        session['isbn'] = request.args.get('isbn', None)
-        session['title'] = request.args.get('title', None)
-        session['author'] = request.args.get('author', None)
-        session['year'] = request.args.get('year', None)
+        session['isbn'] = request.args.get('isbn')
+        session['title'] = request.args.get('title')
+        session['author'] = request.args.get('author')
+        session['year'] = request.args.get('year')
 
         # if any of the above is none, give 404 page
         if session['isbn'] is None or session['title'] is None or session['author'] is None or session['year'] is None:
@@ -225,14 +237,7 @@ def book():
         command = ("SELECT * FROM reviews WHERE isbn='%(isbn)s'" % {"isbn": session['isbn']})
         reviews = db.execute(command).fetchall()
         # separate review list into score, user, and review text
-        session['review_scores'] = []
-        session['review_text'] = []
-        session['review_users'] = []
-        for r in reviews:
-            session['review_scores'].append(r[3])
-            session['review_text'].append(r[2])
-            session['review_users'].append(r[0])
-            # print(review_scores, review_text, review_users, mean(review_scores))
+        session['review_scores'], session['review_text'], session['review_users'] = parsReviews(reviews)
 
         # get reviews from Goodreads
         # define session variables to save Goodreads info
@@ -306,6 +311,47 @@ def book():
                                avgscore=mean(session['review_scores']),
                                numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
                                Gavg=session['Gavgrating'], Rsubmit=1)
+
+
+# API access
+@app.route("/api")
+def api():
+    # get isbn from url
+    isbn = request.args.get('isbn')
+    # query database for book with given isbn
+    command = ("SELECT * FROM books WHERE isbn='%(isbn)s'" % {"isbn": isbn})
+    book = db.execute(command).fetchall()
+
+    # if no book found
+    if len(book) == 0:
+        abort(404)
+    # if book found, get review scores
+    command = ("SELECT * FROM reviews WHERE isbn='%(isbn)s'" % {"isbn": isbn})
+    reviews = db.execute(command).fetchall()
+    review_scores = parsReviews(reviews)[0]
+    # calculate number of reviews and average score
+    numrating = len(review_scores)
+    avgrating = mean(review_scores)
+
+    # build json
+    title = book[0][1]
+    author = book[0][2]
+    year = book[0][3]
+    return jsonify(title=title,
+                   author=author,
+                   isbn=isbn,
+                   year=year,
+                   review_count=numrating,
+                   average_score=avgrating)
+
+
+# API access info page
+@app.route("/api_info")
+def api_info():
+    if session.get("user") is None:  # initialize user to empty
+        session["user"] = ''
+
+    return render_template('api.html', user=session["user"])
 
 
 if __name__ == '__main__':
