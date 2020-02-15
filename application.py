@@ -311,10 +311,8 @@ def book():
 
 
 # API access
-@app.route("/api")
-def api():
-    # get isbn from url
-    isbn = request.args.get('isbn')
+@app.route("/api/<isbn>")
+def api(isbn):
     # query database for book with given isbn
     command = ("SELECT * FROM books WHERE isbn='%(isbn)s'" % {"isbn": isbn})
     book = db.execute(command).fetchall()
