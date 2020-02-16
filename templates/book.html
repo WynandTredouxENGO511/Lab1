@@ -1,11 +1,4 @@
-{% extends "layout.html" %}
-
-
-{% block title %}
-Book Info
-{% endblock %}
-
-{% block body %}
+{% extends "layout.html" %} {% block title %} Book Info {% endblock %} {% block body %}
 <h1>Book Info</h1>
 {% if DBError is defined %}
 <p class="error">{{ DBError }}</p>
@@ -22,15 +15,18 @@ Book Info
     </tr>
 </table>
 {% if numreviews == 0 %}
-<br><h2>No Rating Yet</h2>
+<br>
+<h2>No Rating Yet</h2>
 {% else %}
-<br><h2>Average Rating {{ avgscore }}</h2>
+<br>
+<h2>Average Rating {{ avgscore }}</h2>
 {% endif %}
 
-<br><h2>Reviews ({{ numreviews }})</h2>
+<br>
+<h2>Reviews ({{ numreviews }})</h2>
 
 {% if numreviews > 0 %}
-<table style="width:50%">
+<table style="width: 100%;">
     <tr>
         <th>Username</th>
         <th>Score</th>
@@ -39,46 +35,43 @@ Book Info
     {% for i in range(0,numreviews) %}
 
     <tr>
-        <td>{{ users[i] }}</td>
-        <td>{{ scores[i] }}</td>
-        <td>{{ text[i] }}</td>
+        <td style="vertical-align: text-top;">{{ users[i] }}</td>
+        <td style="vertical-align: text-top;">{{ scores[i] }}</td>
+        <td style="word-break: break-all;">{{ text[i] }}</td>
     </tr>
 
     {% endfor %}
 </table>
-{% endif %}
-
-{% if Gnum is defined %}
-<br><h2>Goodreads.com Rating</h2>
+{% endif %} {% if Gnum is defined %}
+<br>
+<h2>Goodreads.com Rating</h2>
 {% if Gnum == 0 %}
 <p>No ratings for this book found on <a href="http://www.goodreads.com/">Goodreads.com</a></p>
 {% else %}
 <p>
     This book as an average rating of {{ Gavg }} from {{ Gnum }} reviews on <a href="http://www.goodreads.com/">Goodreads.com</a>
 </p>
-{% endif %}
-{% endif %}
+{% endif %} {% endif %}
 
-<br><h2>Submit a Review </h2>
+<br>
+<h2>Submit a Review </h2>
 {% if SubmitError is defined %}
 <p class=error style="margin-bottom:-10px;margin-top:-14px;">{{ SubmitError }}</p>
-{% endif %}
-{% if Rsubmit %}
+{% endif %} {% if Rsubmit %}
 <p style="margin-bottom:-10px;margin-top:-14px;">Review Submitted!</p>
 {% endif %}
 <form action="" method="post">
     <!--    Rating system using radio buttons, credit to https://gist.github.com/blairanderson/7f9d1c08345c6573e09edaa1f7316fa1 -->
     <fieldset class="rating">
-        <input type="radio" id="star5" name="rating" value="5"/><label for="star5" title="Rocks!">5 stars</label>
-        <input type="radio" id="star4" name="rating" value="4"/><label for="star4" title="Pretty good">4 stars</label>
-        <input type="radio" id="star3" name="rating" value="3"/><label for="star3" title="Meh">3 stars</label>
-        <input type="radio" id="star2" name="rating" value="2"/><label for="star2" title="Kinda bad">2 stars</label>
-        <input type="radio" id="star1" name="rating" value="1"/><label for="star1" title="Sucks big time">1 star</label>
+        <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">5 stars</label>
+        <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">4 stars</label>
+        <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">3 stars</label>
+        <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">2 stars</label>
+        <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">1 star</label>
     </fieldset>
     <br><br>
     <textarea name="review" rows="10" cols=100% placeholder="Write a review!" style="resize:both;"></textarea>
     <br>
-    <input type="submit">
+    <input type="submit" value="Submit">
 </form>
-{% endif %}
-{% endblock %}
+{% endif %} {% endblock %}

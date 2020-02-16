@@ -253,7 +253,7 @@ def book():
         return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                author=session['author'], year=session['year'], scores=session['review_scores'],
                                text=session['review_text'], users=session['review_users'],
-                               avgscore=mean(session['review_scores']),
+                               avgscore=round(mean(session['review_scores']), 1),
                                numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
                                Gavg=session['Gavgrating'])
 
@@ -267,7 +267,7 @@ def book():
             return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                    author=session['author'], year=session['year'], scores=session['review_scores'],
                                    text=session['review_text'], users=session['review_users'],
-                                   avgscore=mean(session['review_scores']),
+                                   avgscore=round(mean(session['review_scores']), 1),
                                    numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
                                    Gavg=session['Gavgrating'],
                                    SubmitError="Must rate at last one star")
@@ -275,7 +275,7 @@ def book():
             return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                    author=session['author'], year=session['year'], scores=session['review_scores'],
                                    text=session['review_text'], users=session['review_users'],
-                                   avgscore=mean(session['review_scores']),
+                                   avgscore=round(mean(session['review_scores']), 1),
                                    numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
                                    Gavg=session['Gavgrating'],
                                    SubmitError="Must write a review")
@@ -287,7 +287,7 @@ def book():
             return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                    author=session['author'], year=session['year'], scores=session['review_scores'],
                                    text=session['review_text'], users=session['review_users'],
-                                   avgscore=mean(session['review_scores']),
+                                   avgscore=round(mean(session['review_scores']), 1),
                                    numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
                                    Gavg=session['Gavgrating'],
                                    SubmitError="You cannot submit another review for this book")
@@ -305,7 +305,7 @@ def book():
         return render_template('book.html', user=session["user"], isbn=session['isbn'], title=session['title'],
                                author=session['author'], year=session['year'], scores=session['review_scores'],
                                text=session['review_text'], users=session['review_users'],
-                               avgscore=mean(session['review_scores']),
+                               avgscore=round(mean(session['review_scores']), 1),
                                numreviews=len(session['review_scores']), Gnum=session['Gnumrating'],
                                Gavg=session['Gavgrating'], Rsubmit=1)
 
