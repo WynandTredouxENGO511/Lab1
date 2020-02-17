@@ -2,5 +2,5 @@ Flask
 Flask-Session
 psycopg2-binary
 SQLAlchemy
-hashlib
 requests
+Werkzeug==0.16.1
