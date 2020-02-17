@@ -24,3 +24,6 @@ Build a webiste where users can register, login, saerch for books, leave reviews
 		layout.html - Page containing the layout all other pages are based on
 	/static - folder containing css files for the styling of the site
 	/static/img - folder containing any images used on the site
+
+# Video Demo
+https://youtu.be/6uVgx1pPTBw
